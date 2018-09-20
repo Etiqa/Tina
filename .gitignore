@@ -1,0 +1,20 @@
+# dependencies
+node_modules
+
+# logs
+npm-debug.log
+
+# Nuxt build
+.nuxt
+
+# Nuxt generate
+dist
+
+#db
+server/db-tmp
+
+#server
+server/target
+server/package
+server/.rebel_readline_history
+server/figwheel_server.log

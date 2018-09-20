@@ -1,0 +1,34 @@
+[
+  {
+    "id" : "1",
+    "name": "PSK",
+    "services": [
+      {
+        "name": "QA",
+        "url": "https://psk-qa.jazz.hoverstate.com/version.txt"
+      },
+      {
+        "name": "DEV",
+        "url": "https://psk-dev.jazz.hoverstate.com/version.txt"
+      },
+      {
+        "name": "UAT",
+        "url": "https://psk-uat.jazz.hoverstate.com/version.txt"
+      }
+    ]
+  },
+  {
+    "id" : "2",
+    "name": "Second",
+    "services": [
+      {
+        "name": "Service 2-1",
+        "url": "http://mockurl.fakefake.com"
+      },
+      {
+        "name": "Service 2-2",
+        "url": "http://other-mockurl.fakefake.com"
+      }
+    ]
+  }
+]

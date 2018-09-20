@@ -1,0 +1,38 @@
+{
+  "name": "meta-config",
+  "version": "1.0.0",
+  "description": "Nuxt.js project",
+  "author": "Roberto Serra <roberto.serra@etiqa.it>",
+  "private": true,
+  "scripts": {
+    "dev": "nuxt -c='./frontend/nuxt.config.js'",
+    "build": "nuxt build",
+    "start": "nuxt start",
+    "generate": "nuxt generate",
+    "lint": "eslint --ext .js,.vue --ignore-path .gitignore .",
+    "lintfix": "eslint --fix --ext .js,.vue --ignore-path .gitignore .",
+    "precommit": "npm run lint"
+  },
+  "dependencies": {
+    "bootstrap-vue": "^2.0.0-rc.11",
+    "es6-promise": "^4.2.5",
+    "isomorphic-fetch": "^2.2.1",
+    "nuxt": "^1.0.0"
+  },
+  "devDependencies": {
+    "axios": "^0.18.0",
+    "babel-eslint": "^8.2.6",
+    "eslint": "^4.19.1",
+    "eslint-config-prettier": "^3.0.1",
+    "eslint-friendly-formatter": "^3.0.0",
+    "eslint-loader": "^1.9.0",
+    "eslint-plugin-prettier": "^2.6.2",
+    "eslint-plugin-vue": "^4.7.1",
+    "prettier": "^1.14.2",
+    "prettier-loader": "^2.1.1",
+    "express": "^4.16.3",
+    "body-parser": "^1.18.3",
+    "cors": "^2.8.4",
+    "ssl-root-cas": "^1.2.5"
+  }
+}
