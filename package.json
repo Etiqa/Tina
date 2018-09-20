@@ -1,7 +1,7 @@
 {
-  "name": "meta-config",
-  "version": "1.0.0",
-  "description": "Nuxt.js project",
+  "name": "Tina",
+  "version": "0.1.0",
+  "description": "Tina is not a...",
   "author": "Roberto Serra <roberto.serra@etiqa.it>",
   "private": true,
   "scripts": {
