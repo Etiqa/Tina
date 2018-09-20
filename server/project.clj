@@ -1,6 +1,6 @@
 ;; project.clj
 
-(defproject meta-config-server "0.1.0"
+(defproject meta-config-server "0.1.0-SNAPSHOT"
   :dependencies [[org.clojure/clojure "1.9.0"]
                  [org.clojure/clojurescript "1.10.339"]
                  [org.clojure/data.json "0.2.6"]]
