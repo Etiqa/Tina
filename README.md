@@ -1,10 +1,12 @@
-# Tina
+# Tina: Tina is not a...
 
-## Serve the frontend at localhost:3000
+## Development
+
+### Serve the frontend at localhost:3000
 
 `$ npm run dev`
 
-## Server
+### Server
 
 `$ cd server`
 
