@@ -14,10 +14,13 @@
     "precommit": "npm run lint"
   },
   "dependencies": {
+    "@mysql/xdevapi": "^8.0.12",
     "bootstrap-vue": "^2.0.0-rc.11",
     "es6-promise": "^4.2.5",
     "isomorphic-fetch": "^2.2.1",
-    "nuxt": "^1.0.0"
+    "mysql": "^2.16.0",
+    "nuxt": "^1.0.0",
+    "promise": "^8.0.2"
   },
   "devDependencies": {
     "axios": "^0.18.0",

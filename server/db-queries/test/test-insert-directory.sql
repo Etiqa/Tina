@@ -1,0 +1,2 @@
+INSERT INTO directories (j) VALUES ('{"name": "PSK", "services": [{"name": "QA","url": "https://psk-qa.jazz.hoverstate.com/version.txt"},{"name": "DEV","url": "https://psk-dev.jazz.hoverstate.com/version.txt"},{"name": "UAT","url": "https://psk-uat.jazz.hoverstate.com/version.txt"}]}');
+INSERT INTO directories (j) VALUES ('{"name": "PSK2", "services": [{"name": "QA","url": "https://psk-qa.jazz.hoverstate.com/version.txt"},{"name": "DEV","url": "https://psk-dev.jazz.hoverstate.com/version.txt"},{"name": "UAT","url": "https://psk-uat.jazz.hoverstate.com/version.txt"}]}');

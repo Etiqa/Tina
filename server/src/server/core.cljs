@@ -1,6 +1,8 @@
 (ns server.core
   (:require [cljs.nodejs :as node]
-            [server.store :as server]))
+            [server.store :as server]
+            [server.mysql :as mysql]
+            [server.utils :as utils]))
 
 (node/enable-util-print!)
 
@@ -50,25 +52,15 @@
                  directory-by-id
                  map->json)))
 
-(defn ->then
-  "Add a then fn to a promise"
-  [fn then]
-  (.then fn then))
-
-(defn ->catch
-  "Add a catch fn to a promise"
-  [fn catch]
-  (.catch fn catch))
-
 (defn fetch-url [req res]
   (set! (.-NODE_TLS_REJECT_UNAUTHORIZED (.-env process))  "0")
 
   (let [url (.-url (.-body req))]
     (-> axios
         (.get url)
-        (->then #(.-data %))
-        (->then (fn [content] (.send res (map->json { :content content}))))
-        (->catch (fn [error] (println error)
+        (utils/->then #(.-data %))
+        (utils/->then (fn [content] (.send res (map->json { :content content}))))
+        (utils/->catch (fn [error] (println error)
                    (.send res (map->json { :error error})))))))
 
 (defn attach-api [app]
