@@ -3,6 +3,7 @@
             [server.utils :as utils]))
 
 (def mysql (node/require "mysql"))
+
 (def promise (node/require "promise"))
 
 (def connection (atom nil))
@@ -14,10 +15,9 @@
                        :database"tina_db"}))
 
 (defn raw->clj [data]
-  (->> data
-       (.stringify js/JSON)
-       (.parse js/JSON)
-       (js->clj)))
+  (js->clj (->> data
+                (.stringify js/JSON)
+                (.parse js/JSON)) :keywordize-keys true))
 
 (defn connect []
   (let [pool (.createPool mysql options)]

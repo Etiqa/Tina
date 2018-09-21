@@ -29,28 +29,27 @@
   (.setHeader res "Content-Type" "application/json")
   res)
 
-(defn load-data [callback]
-  (.readFile fs "data/directory.json" "utf8" callback))
-
-(defn load-in-memory []
-  (load-data #(reset! in-memory-data (json->map %2))))
+(defn query->resp [q-result f]
+  (clj->js (doall (map #(.parse js/JSON (f %)) q-result))))
 
 (defn directories [req res]
   (json-response res)
-  (.send res (map->json @in-memory-data)))
-
-(defn directory-by-id [id]
-  (->> @in-memory-data
-       (filter #(= (:id %) id))
-       first))
+  (-> "select j from directories"
+      mysql/run-query
+      (utils/->then (fn [result]
+                      (.send res (query->resp result :j))))))
 
 (defn directory [req res]
   (json-response res)
-  (.send res (-> req
-                 .-params
-                 .-id
-                 directory-by-id
-                 map->json)))
+
+  (let [id (-> req
+               .-params
+               .-id)]
+    (-> "select j from directories where id = ?"
+        (mysql/run-query [id])
+        (utils/->then (fn [result]
+                        (println (query->resp result :j))
+                        (.send res (query->resp result :j)))))))
 
 (defn fetch-url [req res]
   (set! (.-NODE_TLS_REJECT_UNAUTHORIZED (.-env process))  "0")
@@ -69,7 +68,7 @@
   (.post app "/fetch-url" fetch-url))
 
 (defn start-server []
-  (load-in-memory)
+  (mysql/connect)
 
   (let [app (express)
         port 3002]
