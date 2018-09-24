@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <Header :bc="bc" />
-    <h2>{{ id }}!!!!</h2>
+    <h2>{{ name }}!!!!</h2>
 
     <div class="row">
 
@@ -24,7 +24,8 @@ export default {
   components: { Header, Service },
   data() {
     return {
-      services: []
+      services: [],
+      name: ""
     }
   },
   computed: {
@@ -45,6 +46,8 @@ export default {
   methods: {
     fetchData() {
       directory(this.id).then(data => {
+        console.log(data)
+        this.$set(this, "name", data.name)
         this.$set(this, "services", data.services)
       })
     }

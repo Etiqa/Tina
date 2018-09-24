@@ -19,53 +19,45 @@
 (set! (.-ca (.-options (.-globalAgent (node/require "https"))))
       (.create (node/require "ssl-root-cas/latest")))
 
-(defn json->map [json]
-  (js->clj (.parse js/JSON json) :keywordize-keys true))
-
-(defn map->json [mp]
-  (.stringify js/JSON (clj->js mp)))
-
-(defn json-response [res]
-  (.setHeader res "Content-Type" "application/json")
-  res)
-
-(defn query->resp [q-result f]
-  (clj->js (doall (map #(.parse js/JSON (f %)) q-result))))
-
 (defn directories [req res]
-  (json-response res)
-  (-> "select j from directories"
+  (utils/json-response res)
+  (-> "select id, j from directories"
       mysql/run-query
       (utils/->then (fn [result]
-                      (.send res (query->resp result :j))))))
+                      (.send res (utils/query->resp result :j [:id]))))))
 
 (defn directory [req res]
-  (json-response res)
-
+  (utils/json-response res)
   (let [id (-> req
                .-params
                .-id)]
     (-> "select j from directories where id = ?"
         (mysql/run-query [id])
         (utils/->then (fn [result]
-                        (println (query->resp result :j))
-                        (.send res (query->resp result :j)))))))
+                        (.send res (first (utils/query->resp result :j))))))))
 
 (defn fetch-url [req res]
-  (set! (.-NODE_TLS_REJECT_UNAUTHORIZED (.-env process))  "0")
-
+  (set! (.-NODE_TLS_REJECT_UNAUTHORIZED (.-env process)) "0")
   (let [url (.-url (.-body req))]
     (-> axios
         (.get url)
         (utils/->then #(.-data %))
-        (utils/->then (fn [content] (.send res (map->json { :content content}))))
+        (utils/->then (fn [content]
+
+                        (.send res (utils/map->json { :content content}))))
         (utils/->catch (fn [error] (println error)
-                   (.send res (map->json { :error error})))))))
+                         (.send res (utils/map->json { :error error})))))))
+
+(defn add-directory [req res]
+  (let [dir-name (.-name (.-body req))]
+    (mysql/add-directory {:name dir-name :services []})
+    (.send res (utils/map->json { :valid true}))))
 
 (defn attach-api [app]
   (.get app "/" directories)
   (.get app "/directory/:id" directory)
-  (.post app "/fetch-url" fetch-url))
+  (.post app "/fetch-url" fetch-url)
+  (.post app "/directory" add-directory))
 
 (defn start-server []
   (mysql/connect)

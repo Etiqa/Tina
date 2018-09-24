@@ -89,6 +89,7 @@ export default {
       this.edit = !this.edit
     },
     getServiceData() {
+      console.log("get data")
       getDataInfo(this.internalUrl).then(resp => {
         console.log("got the data", resp)
         this.rawResp = resp

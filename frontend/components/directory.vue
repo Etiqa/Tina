@@ -1,6 +1,6 @@
 <template>
   <div class="col-md-4">
-    <h3>{{ directoryId }} - {{ name }}</h3>
+    <h3>({{ directoryId }}){{ name }}</h3>
     <ul>
       <li>{{ elements }} elements</li>
 
@@ -12,8 +12,8 @@
 export default {
   props: {
     directoryId: {
-      type: String,
-      default: ""
+      type: Number,
+      default: 0
     },
     name: {
       type: String,
