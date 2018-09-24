@@ -53,11 +53,17 @@
     (mysql/add-directory {:name dir-name :services []})
     (.send res (utils/map->json { :valid true}))))
 
+(defn add-service [req res]
+ (let [dir-id (-> req .-params .-id)
+       data (-> req .-body)]
+   (mysql/add-service dir-id data)))
+
 (defn attach-api [app]
   (.get app "/" directories)
   (.get app "/directory/:id" directory)
   (.post app "/fetch-url" fetch-url)
-  (.post app "/directory" add-directory))
+  (.post app "/directory" add-directory)
+  (.post app "/directory/:id" add-service))
 
 (defn start-server []
   (mysql/connect)

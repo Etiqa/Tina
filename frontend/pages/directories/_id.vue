@@ -8,8 +8,11 @@
       <Service v-for="(serv, i) in services" :key="i" :name="serv.name" :url="serv.url"/>
     </div>
     <div class="row">
-      <div>
-        <button class="btn btn-success"><i class="fas fa-plus-square" /> Add Service</button>
+      <div v-if="!addServ" class="col">
+        <button class="btn btn-success" @click.prevent="toggleAdd"><i class="fas fa-plus-square" /> Add Service</button>
+      </div>
+      <div v-else class="col-md-6">
+        <ServiceForm v-bind="{ onClickCancel: toggleAdd, onSave: addService }"/>
       </div>
     </div>
   </div>
@@ -18,14 +21,16 @@
 <script>
 import Header from "../../components/Header"
 import Service from "../../components/Service"
-import { directory } from "../../services/requests"
+import ServiceForm from "../../components/ServiceForm"
+import { directory, addService } from "../../services/requests"
 
 export default {
-  components: { Header, Service },
+  components: { Header, Service, ServiceForm },
   data() {
     return {
       services: [],
-      name: ""
+      name: "",
+      addServ: false
     }
   },
   computed: {
@@ -46,10 +51,16 @@ export default {
   methods: {
     fetchData() {
       directory(this.id).then(data => {
-        console.log(data)
         this.$set(this, "name", data.name)
         this.$set(this, "services", data.services)
       })
+    },
+    toggleAdd() {
+      this.$set(this, "addServ", !this.addServ)
+    },
+    addService({ url, name }) {
+      console.log(url, name)
+      addService(this.id, { url, name })
     }
   }
 }

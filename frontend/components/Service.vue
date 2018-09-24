@@ -29,20 +29,18 @@
       </div>
     </div>
 
-    <div v-else class="col-md-4">
-      <ul>
-        <li><label :for="inputUrl">URL:</label> <input v-model="editUrl" :name="inputUrl" type="text" value="" placeholder="https://..." ></li>
-      </ul>
-      <button class="btn btn-success" @click.prevent="saveUpdate">Save</button>
-      <button class="btn btn-primary" @click.prevent="cancelUpdate">Cancel</button>
+    <div v-else class="col">
+      <ServiceForm v-bind="{ onClickCancel: closeEdit, onSave: saveUpdate, originalUrl: url }"/>
     </div>
   </div>
 </template>
 
 <script>
 import { getDataInfo } from "../services/requests"
+import ServiceForm from "./ServiceForm"
 
 export default {
+  components: { ServiceForm },
   props: {
     info: {
       default: () => ({}),
@@ -61,7 +59,6 @@ export default {
     return {
       edit: false,
       showRawResponse: false,
-      editUrl: this.url,
       internalUrl: this.url,
       rawResp: null
     }
@@ -72,12 +69,11 @@ export default {
     }
   },
   mounted() {
-    console.log(this.url)
     this.getServiceData()
   },
   methods: {
-    saveUpdate() {
-      this.internalUrl = this.editUrl
+    saveUpdate({ url }) {
+      this.internalUrl = url
       this.toggleEdit()
     },
     cancelUpdate() {
@@ -88,10 +84,11 @@ export default {
     toggleEdit() {
       this.edit = !this.edit
     },
+    closeEdit() {
+      this.edit = false
+    },
     getServiceData() {
-      console.log("get data")
       getDataInfo(this.internalUrl).then(resp => {
-        console.log("got the data", resp)
         this.rawResp = resp
       })
     },

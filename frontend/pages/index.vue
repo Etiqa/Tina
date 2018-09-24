@@ -30,7 +30,6 @@ export default {
     fetchData() {
       return directories()
         .then(data => {
-          data.forEach(d => console.log(d.j))
           this.$set(this, "directories", data)
         })
         .catch(error => console.log("error", error))

@@ -29,19 +29,30 @@
   ([query]
    (run-query query []))
 
-  ([query binding]
+  ([query & bindings]
    (promise. (fn [done reject]
                (if (nil? @connection)
                  (reject "No DB connection")
-                 (.query @connection query (clj->js binding) (fn [error results fields]
-                                                               (if-not (nil? error)
-                                                                 (reject error)
-                                                                 (done (raw->clj results) (raw->clj fields))))))))))
+                 (let [q (.query @connection query (clj->js bindings) (fn [error results fields]
+                                                                              (if-not (nil? error)
+                                                                                (reject error)
+                                                                                (done (raw->clj results) (raw->clj fields)))))]
+                   (println (.-sql q))))))))
 
 (defn add-directory [data]
   (-> "INSERT INTO directories SET j = ?"
-      (run-query (utils/map->json data))
-      (utils/->then (fn [& _] (println "DOOOOONW")))
+      (run-query (utils/map->json [data]))
+      (utils/->catch #(do (println "ERROR")
+                          (println %1)))))
+
+(defn add-service [dir-id data]
+  (-> "SELECT JSON_LENGTH(j,'$.services') AS cnt from directories WHERE id=?"
+      (run-query dir-id)
+      (utils/->then #(do
+                       (println "ioioioi")
+                       (println (clj->js (js->clj data)))
+
+                       (run-query "UPDATE directories set j = json_set(j, '$.services[?]', ?) WHERE id = ?" (-> %1 first :cnt) (js->clj data) dir-id)))
       (utils/->catch #(do (println "ERROR")
                           (println %1)))))
 
