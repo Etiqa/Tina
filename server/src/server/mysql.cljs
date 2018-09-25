@@ -69,9 +69,10 @@
                           (println %1)
                           (error-promise %1)))))
 
-(defn test-query []
-  (-> "SELECT id, j->'$.name' from directories"
-      run-query
-      (utils/->then #(println %1))
+
+(defn delete-service [dir-id serv-id]
+  (-> "UPDATE directories set j = json_remove(j, '$.services[?]') WHERE id = ?"
+      (run-query (js/parseInt serv-id) dir-id)
       (utils/->catch #(do (println "ERROR")
-                    (println %1)))))
+                          (println %1)
+                          (error-promise %1)))))

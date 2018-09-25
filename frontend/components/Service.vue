@@ -1,12 +1,11 @@
 <template>
   <div class="col-md-12">
-    <h3>{{ internalName }} -- {{ id }}</h3>
+    <h3>{{ internalName }}</h3>
 
-    <div v-if="!edit">
+    <div v-if="!edit && !del">
       <div class="float-right">
         <button class="btn btn-primary" @click.prevent="toggleEdit"><i class="fas fa-pencil-alt" /></button>
-
-        <button class="btn btn-danger"><i class="fas fa-ban"/></button>
+        <button class="btn btn-danger" @click.prevent="startDelete"><i class="fas fa-ban"/></button>
       </div>
 
       <ul class="">
@@ -29,14 +28,23 @@
       </div>
     </div>
 
-    <div v-else class="col">
+    <div v-else-if="edit" class="col">
       <ServiceForm v-bind="{ onClickCancel: closeEdit, onSave: saveUpdate, originalUrl: url, originalName: name }"/>
+    </div>
+    <div v-else-if="del" class="col">
+      <div>
+        Do you really want to delete {{ internalName }}
+      </div>
+      <div>
+        <button class="btn btn-danger" @click.prevent="deleteService">Delete</button>
+        <button class="btn btn-primary" @click.prevent="stopDelete">Cancel</button>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
-import { getDataInfo, updateService } from "../services/requests"
+import { getDataInfo, updateService, deleteService } from "../services/requests"
 import ServiceForm from "./ServiceForm"
 
 export default {
@@ -73,7 +81,8 @@ export default {
       showRawResponse: false,
       internalUrl: this.url,
       internalName: this.name,
-      rawResp: null
+      rawResp: null,
+      del: false
     }
   },
   computed: {
@@ -110,6 +119,15 @@ export default {
     },
     toggleRawResponse() {
       this.showRawResponse = !this.showRawResponse
+    },
+    startDelete() {
+      this.del = true
+    },
+    stopDelete() {
+      this.del = false
+    },
+    deleteService() {
+      deleteService(this.dirId, this.id).then(this.updateFn)
     }
   }
 }

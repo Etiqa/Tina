@@ -75,13 +75,27 @@
         (utils/->catch (fn [error]
                          (.send res error))))))
 
+(defn delete-service [req res]
+  (let [dir-id (-> req .-params .-id)
+        serv-id (-> req .-params .-sid)]
+
+    (-> dir-id
+        (mysql/delete-service serv-id)
+        (utils/->then (fn [result]
+                        (.send res (clj->js {:done true}))))
+        (utils/->catch (fn [error]
+                         (.send res error)))))
+
+)
+
 (defn attach-api [app]
   (.get app "/" directories)
   (.get app "/directory/:id" directory)
   (.post app "/fetch-url" fetch-url)
   (.post app "/directory" add-directory)
   (.post app "/directory/:id" add-service)
-  (.put app "/directory/:id/:sid" update-service))
+  (.put app "/directory/:id/:sid" update-service)
+  (.delete app "/directory/:id/:sid" delete-service))
 
 (defn start-server []
   (mysql/connect)

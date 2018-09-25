@@ -40,3 +40,10 @@ export const updateService = (dirId, serviceId, dirData) => {
     .then(({ data }) => data.content)
     .catch(error => console.log("error", error))
 }
+
+export const deleteService = (dirId, serviceId) => {
+  return axios
+    .delete(`${baseUrl}/directory/${dirId}/${serviceId}`)
+    .then(({ data }) => data.content)
+    .catch(error => console.log("error", error))
+}
