@@ -28,7 +28,6 @@
 (defn run-query
   ([query]
    (run-query query []))
-
   ([query & bindings]
    (promise. (fn [done reject]
                (if (nil? @connection)
@@ -46,24 +45,24 @@
      (println error)
      (reject (clj->js {:error (.-code error)})))))
 
-(defn add-directory [data]
-  (-> "INSERT INTO directories SET j = ?"
-      (run-query (utils/map->json [data]))
+(defn add-directory [dir-name]
+  (-> "INSERT INTO directories (j) VALUES (JSON_OBJECT('name', ?, 'services', JSON_ARRAY()))"
+      (run-query dir-name)
       (utils/->catch #(do (println "ERROR")
                           (println %1)
                           (error-promise %1)))))
 
 (defn add-service [dir-id data]
-  (-> "SELECT JSON_LENGTH(j,'$.services') AS cnt from directories WHERE id=?"
+  (-> "SELECT JSON_LENGTH(j,'$.services') AS cnt FROM directories WHERE id=?"
       (run-query dir-id)
-      (utils/->then #(run-query "UPDATE directories set j = json_set(j, '$.services[?]', JSON_OBJECT('name', ?, 'url', ?)) WHERE id = ?"
+      (utils/->then #(run-query "UPDATE directories SET j = JSON_SET(j, '$.services[?]', JSON_OBJECT('name', ?, 'url', ?)) WHERE id = ?"
                                 (-> %1 first :cnt) (.-name data) (.-url data) dir-id))
       (utils/->catch #(do (println "ERROR")
                           (println %1)
                           (error-promise %1)))))
 
 (defn update-service [dir-id serv-id data]
-  (-> "UPDATE directories set j = json_set(j, '$.services[?]', JSON_OBJECT('name', ?, 'url', ?)) WHERE id = ?"
+  (-> "UPDATE directories SET j = JSON_SET(j, '$.services[?]', JSON_OBJECT('name', ?, 'url', ?)) WHERE id = ?"
       (run-query (js/parseInt serv-id) (.-name data) (.-url data) dir-id)
       (utils/->catch #(do (println "ERROR")
                           (println %1)
@@ -71,8 +70,15 @@
 
 
 (defn delete-service [dir-id serv-id]
-  (-> "UPDATE directories set j = json_remove(j, '$.services[?]') WHERE id = ?"
+  (-> "UPDATE directories SET j = JSON_REMOVE(j, '$.services[?]') WHERE id = ?"
       (run-query (js/parseInt serv-id) dir-id)
+      (utils/->catch #(do (println "ERROR")
+                          (println %1)
+                          (error-promise %1)))))
+
+(defn delete-directory [dir-id]
+  (-> "DELETE FROM directories WHERE id = ?"
+      (run-query dir-id)
       (utils/->catch #(do (println "ERROR")
                           (println %1)
                           (error-promise %1)))))

@@ -43,14 +43,13 @@
         (.get url)
         (utils/->then #(.-data %))
         (utils/->then (fn [content]
-
-                        (.send res (utils/map->json { :content content}))))
-        (utils/->catch (fn [error] (println error)
-                         (.send res (utils/map->json { :error error})))))))
+                        (.send res (utils/map->json {:content content}))))
+        (utils/->catch (fn [error]
+                         (.send res (utils/map->json {:content (.-message error)})))))))
 
 (defn add-directory [req res]
   (let [dir-name (.-name (.-body req))]
-    (mysql/add-directory {:name dir-name :services []})
+    (mysql/add-directory dir-name)
     (.send res (utils/map->json { :valid true}))))
 
 (defn add-service [req res]
@@ -84,9 +83,16 @@
         (utils/->then (fn [result]
                         (.send res (clj->js {:done true}))))
         (utils/->catch (fn [error]
-                         (.send res error)))))
+                         (.send res error))))))
 
-)
+(defn delete-directory [req res]
+  (let [dir-id (-> req .-params .-id)]
+    (-> dir-id
+        mysql/delete-directory
+        (utils/->then (fn [result]
+                        (.send res (clj->js {:done true}))))
+        (utils/->catch (fn [error]
+                         (.send res error))))))
 
 (defn attach-api [app]
   (.get app "/" directories)
@@ -95,7 +101,8 @@
   (.post app "/directory" add-directory)
   (.post app "/directory/:id" add-service)
   (.put app "/directory/:id/:sid" update-service)
-  (.delete app "/directory/:id/:sid" delete-service))
+  (.delete app "/directory/:id/:sid" delete-service)
+  (.delete app "/directory/:id/" delete-directory))
 
 (defn start-server []
   (mysql/connect)

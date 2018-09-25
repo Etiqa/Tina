@@ -1,15 +1,14 @@
 <template>
   <div class="container">
     <Header />
-    <div class="row"/>
-    <Directory v-for="(dir, i) in directories" :key="i" :name="dir.name" :elements="dir.services.length" :directory-id="dir.id" />
+    <Directory v-for="(dir, i) in directories" :key="i" :name="dir.name" :elements="dir.services ? dir.services.length : 0" :directory-id="dir.id" :update-fn="fetchData" />
     <AddDirectory v-if="!addDir" v-bind="{ onClick: toggleAdd }" />
     <DirectoryForm v-else v-bind="{ onClickCancel: toggleAdd, onSave: saveDirectory }" />
   </div>
 </template>
 
 <script>
-import Directory from "../components/directory"
+import Directory from "../components/Directory"
 import Header from "../components/Header"
 import { directories, addDirectory } from "../services/requests"
 import AddDirectory from "../components/AddDirectory"

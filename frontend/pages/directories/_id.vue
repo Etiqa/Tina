@@ -59,8 +59,8 @@ export default {
       this.$set(this, "addServ", !this.addServ)
     },
     addService({ url, name }) {
-      console.log(url, name)
-      addService(this.id, { url, name })
+      this.$set(this, "addServ", false)
+      addService(this.id, { url, name }).then(this.fetchData)
     }
   }
 }
