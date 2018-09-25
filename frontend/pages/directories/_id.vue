@@ -5,7 +5,7 @@
 
     <div class="row">
 
-      <Service v-for="(serv, i) in services" :key="i" :name="serv.name" :url="serv.url"/>
+      <Service v-for="(serv, i) in services" :key="i" :dir-id="id" :id="i" :name="serv.name" :url="serv.url" :update-fn="fetchData"/>
     </div>
     <div class="row">
       <div v-if="!addServ" class="col">

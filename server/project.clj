@@ -4,11 +4,13 @@
   :dependencies [[org.clojure/clojure "1.9.0"]
                  [org.clojure/clojurescript "1.10.339"]
                  [org.clojure/data.json "0.2.6"]]
-  :dev-dependencies [[lein-cljsbuild "1.1.7"]]
+
+  :profiles {:dev
+             {:dependencies [[lein-cljsbuild "1.1.7"]
+                             [figwheel-sidecar "0.5.8"]]}}
   :plugins [[lein-cljsbuild "1.1.5"]
-            [lein-figwheel "0.5.16"]
-            [figwheel-sidecar "0.5.8"]]
-  :cljsbuild {:builds [{:id "prod"
+            [lein-figwheel "0.5.16"]]
+             :cljsbuild {:builds [{:id "prod"
                         :figwheel true
                         :source-paths ["src"]
                         :compiler {:main server.core

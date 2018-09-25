@@ -33,3 +33,10 @@ export const addService = (dirId, dirData) => {
     .then(({ data }) => data.content)
     .catch(error => console.log("error", error))
 }
+
+export const updateService = (dirId, serviceId, dirData) => {
+  return axios
+    .put(`${baseUrl}/directory/${dirId}/${serviceId}`, dirData)
+    .then(({ data }) => data.content)
+    .catch(error => console.log("error", error))
+}

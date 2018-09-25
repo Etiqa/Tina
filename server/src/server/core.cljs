@@ -56,14 +56,32 @@
 (defn add-service [req res]
  (let [dir-id (-> req .-params .-id)
        data (-> req .-body)]
-   (mysql/add-service dir-id data)))
+   (-> dir-id
+       (mysql/add-service data)
+       (utils/->then (fn [result]
+                       (.send res (clj->js {:done true}))))
+       (utils/->catch (fn [error]
+                        (.send res error))))))
+
+(defn update-service [req res]
+  (let [dir-id (-> req .-params .-id)
+        serv-id (-> req .-params .-sid)
+        data (-> req .-body)]
+
+    (-> dir-id
+        (mysql/update-service serv-id data)
+        (utils/->then (fn [result]
+                        (.send res (clj->js {:done true}))))
+        (utils/->catch (fn [error]
+                         (.send res error))))))
 
 (defn attach-api [app]
   (.get app "/" directories)
   (.get app "/directory/:id" directory)
   (.post app "/fetch-url" fetch-url)
   (.post app "/directory" add-directory)
-  (.post app "/directory/:id" add-service))
+  (.post app "/directory/:id" add-service)
+  (.put app "/directory/:id/:sid" update-service))
 
 (defn start-server []
   (mysql/connect)

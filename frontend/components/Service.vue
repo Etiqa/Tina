@@ -1,6 +1,6 @@
 <template>
   <div class="col-md-12">
-    <h3>{{ name }}</h3>
+    <h3>{{ internalName }} -- {{ id }}</h3>
 
     <div v-if="!edit">
       <div class="float-right">
@@ -30,18 +30,26 @@
     </div>
 
     <div v-else class="col">
-      <ServiceForm v-bind="{ onClickCancel: closeEdit, onSave: saveUpdate, originalUrl: url }"/>
+      <ServiceForm v-bind="{ onClickCancel: closeEdit, onSave: saveUpdate, originalUrl: url, originalName: name }"/>
     </div>
   </div>
 </template>
 
 <script>
-import { getDataInfo } from "../services/requests"
+import { getDataInfo, updateService } from "../services/requests"
 import ServiceForm from "./ServiceForm"
 
 export default {
   components: { ServiceForm },
   props: {
+    id: {
+      default: 999,
+      type: Number
+    },
+    dirId: {
+      default: "",
+      type: String
+    },
     info: {
       default: () => ({}),
       type: Object
@@ -53,6 +61,10 @@ export default {
     url: {
       default: "",
       type: String
+    },
+    updateFn: {
+      default: () => () => ({}),
+      type: Function
     }
   },
   data() {
@@ -60,6 +72,7 @@ export default {
       edit: false,
       showRawResponse: false,
       internalUrl: this.url,
+      internalName: this.name,
       rawResp: null
     }
   },
@@ -72,13 +85,16 @@ export default {
     this.getServiceData()
   },
   methods: {
-    saveUpdate({ url }) {
+    saveUpdate({ url, name }) {
       this.internalUrl = url
+      this.internalName = name
       this.toggleEdit()
+      updateService(this.dirId, this.id, { url, name }).then(this.updateFn)
     },
     cancelUpdate() {
       this.editUrl = this.url
       this.internalUrl = this.url
+      this.internalName = this.name
       this.toggleEdit()
     },
     toggleEdit() {

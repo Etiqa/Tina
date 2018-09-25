@@ -33,29 +33,41 @@
    (promise. (fn [done reject]
                (if (nil? @connection)
                  (reject "No DB connection")
-                 (let [q (.query @connection query (clj->js bindings) (fn [error results fields]
-                                                                              (if-not (nil? error)
-                                                                                (reject error)
-                                                                                (done (raw->clj results) (raw->clj fields)))))]
+                 (let [q (.query @connection query (clj->js bindings)
+                                 (fn [error results fields]
+                                   (if-not (nil? error)
+                                     (reject error)
+                                     (done (raw->clj results) (raw->clj fields)))))]
                    (println (.-sql q))))))))
+
+(defn error-promise [error]
+  (promise.
+   (fn [_ reject]
+     (println error)
+     (reject (clj->js {:error (.-code error)})))))
 
 (defn add-directory [data]
   (-> "INSERT INTO directories SET j = ?"
       (run-query (utils/map->json [data]))
       (utils/->catch #(do (println "ERROR")
-                          (println %1)))))
+                          (println %1)
+                          (error-promise %1)))))
 
 (defn add-service [dir-id data]
   (-> "SELECT JSON_LENGTH(j,'$.services') AS cnt from directories WHERE id=?"
       (run-query dir-id)
-      (utils/->then #(do
-                       (println "ioioioi")
-                       (println (clj->js (js->clj data)))
-
-                       (run-query "UPDATE directories set j = json_set(j, '$.services[?]', ?) WHERE id = ?" (-> %1 first :cnt) (js->clj data) dir-id)))
+      (utils/->then #(run-query "UPDATE directories set j = json_set(j, '$.services[?]', JSON_OBJECT('name', ?, 'url', ?)) WHERE id = ?"
+                                (-> %1 first :cnt) (.-name data) (.-url data) dir-id))
       (utils/->catch #(do (println "ERROR")
-                          (println %1)))))
+                          (println %1)
+                          (error-promise %1)))))
 
+(defn update-service [dir-id serv-id data]
+  (-> "UPDATE directories set j = json_set(j, '$.services[?]', JSON_OBJECT('name', ?, 'url', ?)) WHERE id = ?"
+      (run-query (js/parseInt serv-id) (.-name data) (.-url data) dir-id)
+      (utils/->catch #(do (println "ERROR")
+                          (println %1)
+                          (error-promise %1)))))
 
 (defn test-query []
   (-> "SELECT id, j->'$.name' from directories"

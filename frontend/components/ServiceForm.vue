@@ -33,6 +33,10 @@ export default {
     originalUrl: {
       default: () => null,
       type: String
+    },
+    originalName: {
+      default: () => null,
+      type: String
     }
   },
   data() {
