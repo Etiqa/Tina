@@ -21,7 +21,12 @@
           Info
           <table class="table table-striped">
             <tr v-for="(c, k) in info" :key="k">
-              <td v-for="(cc, kk) in c" :key="kk">{{ cc }}</td>
+              <div v-if="typeof c === 'object'">
+                <td v-for="(cc, kk) in c" :key="kk">{{ cc }}</td>
+              </div>
+              <div v-else>
+                <td>{{ c }}</td>
+              </div>
             </tr>
           </table>
         </li>
@@ -50,10 +55,26 @@
 import { getDataInfo, updateService, deleteService } from "../services/requests"
 import ServiceForm from "./ServiceForm"
 
+/**
 const parseFn = rawData => {
   return [
     ["Build Number", rawData.replace(/Build number/, "").replace(/\s/g, "")]
   ]
+}
+*/
+const parseFn = rawData => {
+  const shadowDom = document.createElement("div")
+
+  shadowDom.innerHTML = rawData
+    .match(/<body[.\S\s]*<\/body>/)[0]
+    .replace(/\n/g, "")
+    .replace(/<body>/g, "")
+    .replace(/<\/body>/g, "")
+    .trim()
+
+  return Array.prototype.slice
+    .call(shadowDom.querySelectorAll(".entry-title > a"))
+    .map(el => el.innerText)
 }
 
 export default {
