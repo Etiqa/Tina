@@ -17,10 +17,13 @@
           <button class="btn btn-success" @click.prevent="toggleRawResponse"> Show/hide </button>
           <div v-show="showRawResponse"><pre> {{ rawResp }}</pre> </div>
         </li>
-        <li class="">
-          Info: <ul>
-            <li v-for="(c, k) in info" :key="k">{{ k }}: {{ c }}</li>
-          </ul>
+        <li class="col-md-6">
+          Info
+          <table class="table table-striped">
+            <tr v-for="(c, k) in info" :key="k">
+              <td v-for="(cc, kk) in c" :key="kk">{{ cc }}</td>
+            </tr>
+          </table>
         </li>
       </ul>
       <div class="float-right">
@@ -47,6 +50,12 @@
 import { getDataInfo, updateService, deleteService } from "../services/requests"
 import ServiceForm from "./ServiceForm"
 
+const parseFn = rawData => {
+  return [
+    ["Build Number", rawData.replace(/Build number/, "").replace(/\s/g, "")]
+  ]
+}
+
 export default {
   components: { ServiceForm },
   props: {
@@ -57,10 +66,6 @@ export default {
     dirId: {
       default: "",
       type: String
-    },
-    info: {
-      default: () => ({}),
-      type: Object
     },
     name: {
       default: "",
@@ -88,6 +93,9 @@ export default {
   computed: {
     inputUrl() {
       return `${this.name}-url`
+    },
+    info() {
+      return this.rawResp ? parseFn(this.rawResp) : []
     }
   },
   mounted() {

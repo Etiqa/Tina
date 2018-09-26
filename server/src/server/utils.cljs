@@ -1,4 +1,7 @@
-(ns server.utils)
+(ns server.utils
+  (:require [cljs.nodejs :as node]))
+
+(def promise (node/require "promise"))
 
 (defn ->then
   "Add a then fn to a promise"
@@ -35,3 +38,7 @@
                   (js->clj  :keywordize-keys true)
                   (merge (select-keys % oth-keys))))
         clj->js)))
+
+
+(defn reject-with-error [err-code]
+  (.reject promise (clj->js {:code err-code})))

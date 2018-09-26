@@ -39,6 +39,7 @@ export default {
     },
     bc() {
       return [
+        { url: "/dashboard", name: "dashboard" },
         {
           name: this.name
         }

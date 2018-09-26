@@ -1,49 +1,32 @@
 <template>
   <div class="container">
-    <Header />
-    <Directory v-for="(dir, i) in directories" :key="i" :name="dir.name" :elements="dir.services ? dir.services.length : 0" :directory-id="dir.id" :update-fn="fetchData" />
-    <AddDirectory v-if="!addDir" v-bind="{ onClick: toggleAdd }" />
-    <DirectoryForm v-else v-bind="{ onClickCancel: toggleAdd, onSave: saveDirectory }" />
+    <Header :logged="logged" />
+
+    <div v-if="signin" class="row">
+      <Signin v-bind="{ onToggleSignin }"/>
+    </div>
+    <div v-else class="row">
+      <Signup v-bind="{ onToggleSignin }"/>
+    </div>
   </div>
 </template>
 
 <script>
-import Directory from "../components/Directory"
 import Header from "../components/Header"
-import { directories, addDirectory } from "../services/requests"
-import AddDirectory from "../components/AddDirectory"
-import DirectoryForm from "../components/DirectoryForm"
+import Signin from "../components/Signin"
+import Signup from "../components/Signup"
 
 export default {
-  components: { Directory, Header, AddDirectory, DirectoryForm },
+  components: { Header, Signin, Signup },
   data() {
     return {
-      directories: [],
-      addDir: false
+      signin: false,
+      logged: false
     }
   },
-  mounted() {
-    this.fetchData()
-  },
   methods: {
-    fetchData() {
-      return directories()
-        .then(data => {
-          this.$set(this, "directories", data)
-        })
-        .catch(error => console.log("error", error))
-    },
-    toggleAdd() {
-      this.$set(this, "addDir", !this.addDir)
-    },
-    closeAdd() {
-      this.$set(this, "addDir", false)
-    },
-    saveDirectory(dirData) {
-      addDirectory(dirData).then(() => {
-        this.closeAdd()
-        this.fetchData()
-      })
+    onToggleSignin() {
+      this.$set(this, "signin", !this.signin)
     }
   }
 }
