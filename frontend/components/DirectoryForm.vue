@@ -1,12 +1,12 @@
 <template>
-  <div>
+  <div class="col-md-6 mt-3">
     <form @submit.prevent="onSubmit">
-      <div>
-        <label for="name">Name</label>
-        <input v-model="dirName" name="name" type="text" value="" required>
+      <div class="form-group">
+        <label for="name">Directory name</label>
+        <input v-model="dirName" name="name" type="text" class="form-control" value="" required>
       </div>
 
-      <div>
+      <div class="btn-group" role="group">
         <button class="btn btn-success" type="submit">Save</button>
         <button class="btn btn-primary" @click.prevent="onClickCancel">Cancel</button>
       </div>

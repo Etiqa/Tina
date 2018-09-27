@@ -1,43 +1,49 @@
 <template>
-  <div class="col-md-12">
-    <h3>{{ internalName }}</h3>
+  <div class="col-md-12 mt-4">
+    <h3 class="h5">{{ internalName }}</h3>
 
-    <div v-if="!edit && !del">
-      <div class="float-right">
+    <div v-if="!edit && !del" class="row">
+      <div class="col-md-10">
+        <ul class="list-group">
+          <li class="list-group-item">
+            <div class="row">
+              <strong class="col-md-1">URL </strong>
+              <a :href="internalUrl" class="col-md-10" target="_blank">{{ internalUrl }}</a>
+            </div>
+          </li>
+          <li class="list-group-item">
+            <div class="row">
+              <div class="col-md-1">
+                <strong>Info</strong>
+              </div>
+              <table class="col-md-11 table table-striped">
+                <tr v-for="(c, k) in info" :key="k">
+                  <div v-if="typeof c === 'object'">
+                    <td v-for="(cc, kk) in c" :key="kk">{{ cc }}</td>
+                  </div>
+                  <div v-else>
+                    <td>{{ c }}</td>
+                  </div>
+                </tr>
+              </table>
+            </div>
+          </li>
+          <li class="list-group-item">
+            Raw Response:
+            <button class="btn btn-success" @click.prevent="toggleRawResponse"> Show/hide </button>
+            <div v-show="showRawResponse"><pre> {{ rawResp }}</pre> </div>
+          </li>
+          <li class="list-group-item">
+            Parse Function:
+            <button class="btn btn-success" @click.prevent="toggleParseFn"> Show/hide </button>
+            <div v-show="showParseFn"><pre> {{ internalParseFn }}</pre> </div>
+          </li>
+        </ul>
+      </div>
+      <div class="col-md-2" role="group">
+        <button class="btn btn-secondary" @click.prevent="getServiceData"><i class="fas fa-redo" /></button>
         <button class="btn btn-primary" @click.prevent="toggleEdit"><i class="fas fa-pencil-alt" /></button>
         <button class="btn btn-danger" @click.prevent="startDelete"><i class="fas fa-ban"/></button>
-      </div>
-
-      <ul class="">
-        <li class="">
-          URL: <span>{{ internalUrl }}</span>
-        </li>
-        <li class="">
-          Raw Response:
-          <button class="btn btn-success" @click.prevent="toggleRawResponse"> Show/hide </button>
-          <div v-show="showRawResponse"><pre> {{ rawResp }}</pre> </div>
-        </li>
-        <li class="">
-          Parse Function:
-          <button class="btn btn-success" @click.prevent="toggleParseFn"> Show/hide </button>
-          <div v-show="showParseFn"><pre> {{ internalParseFn }}</pre> </div>
-        </li>
-        <li class="col-md-6">
-          Info
-          <table class="table table-striped">
-            <tr v-for="(c, k) in info" :key="k">
-              <div v-if="typeof c === 'object'">
-                <td v-for="(cc, kk) in c" :key="kk">{{ cc }}</td>
-              </div>
-              <div v-else>
-                <td>{{ c }}</td>
-              </div>
-            </tr>
-          </table>
-        </li>
-      </ul>
-      <div class="float-right">
-        <button class="btn btn-secondary" @click.prevent="getServiceData"><i class="fas fa-redo" /></button>
       </div>
     </div>
     <div v-else-if="edit" class="col">
@@ -47,7 +53,7 @@
       <div>
         Do you really want to delete {{ internalName }}
       </div>
-      <div>
+      <div class="btn-group" role="group">
         <button class="btn btn-danger" @click.prevent="deleteService">Delete</button>
         <button class="btn btn-primary" @click.prevent="stopDelete">Cancel</button>
       </div>
@@ -101,11 +107,15 @@ export default {
       return `${this.name}-url`
     },
     info() {
-      const parseFn =
-        this.parseFn && typeof eval(this.parseFn) === "function"
-          ? eval(this.parseFn)
-          : raw => [raw]
-      return this.rawResp ? parseFn(this.rawResp) : []
+      try {
+        const parseFn =
+          this.parseFn && typeof eval(this.parseFn) === "function"
+            ? eval(this.parseFn)
+            : raw => [raw]
+        return this.rawResp ? parseFn(this.rawResp) : []
+      } catch (error) {
+        console.error(error)
+      }
     },
     internalName() {
       return this.name

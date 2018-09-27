@@ -1,15 +1,15 @@
 <template>
   <div class="col-md-4">
     <h3>{{ name }}</h3>
-    <ul>
-      <li>{{ elements }} elements</li>
-      <li><nuxt-link :to="url">open</nuxt-link></li>
-      <li v-if="!del"><button class="btn btn-danger" @click.prevent="startDelete">Delete</button></li>
-      <li v-else>
-        <div>
-          Delete all {{ elements }} elements?
+    <ul class="list-group">
+      <li class="list-group-item d-flex justify-content-between align-items-center">elements <span class="badge badge-primary badge-pill">{{ elements }}</span></li>
+      <li class="list-group-item"><nuxt-link :to="url">open</nuxt-link></li>
+      <li v-if="!del" class="list-group-item"><button class="btn btn-danger" @click.prevent="startDelete">Delete</button></li>
+      <li v-else class="list-group-item">
+        <div >
+          Are you sure?
         </div>
-        <div>
+        <div class="btn-group" role="group">
           <button class="btn btn-danger" @click.prevent="deleteDirectory">Delete</button>
           <button class="btn btn-primary" @click.prevent="cancelDelete">Cancel</Button>
         </div>

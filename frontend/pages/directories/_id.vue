@@ -1,17 +1,16 @@
 <template>
   <div class="container">
     <Header :bc="bc" />
-    <h2>{{ name }}!!!!</h2>
-
-    <div class="row">
-
+    <h2>{{ name }}</h2>
+    <div class="row mt-3">
       <Service v-for="(serv, i) in services" :key="i" :dir-id="id" :id="i" :name="serv.name" :url="serv.url" :update-fn="fetchData" :parse-fn="serv.parseFn"/>
     </div>
-    <div class="row">
+    <div class="row mt-3">
       <div v-if="!addServ" class="col">
         <button class="btn btn-success" @click.prevent="toggleAdd"><i class="fas fa-plus-square" /> Add Service</button>
       </div>
-      <div v-else class="col-md-6">
+      <div v-else class="col-md-10">
+        <strong>New Service</strong>
         <ServiceForm v-bind="{ onClickCancel: toggleAdd, onSave: addService }"/>
       </div>
     </div>

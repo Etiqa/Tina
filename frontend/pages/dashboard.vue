@@ -1,9 +1,15 @@
 <template>
   <div class="container">
     <Header :bc="bc"/>
-    <Directory v-for="(dir, i) in directories" :key="i" :name="dir.name" :elements="dir.services ? dir.services.length : 0" :directory-id="dir.id" :update-fn="fetchData" />
-    <AddDirectory v-if="!addDir" v-bind="{ onClick: toggleAdd }" />
-    <DirectoryForm v-else v-bind="{ onClickCancel: toggleAdd, onSave: saveDirectory }" />
+    <div class="row">
+      <Directory v-for="(dir, i) in directories" :key="i" :name="dir.name" :elements="dir.services ? dir.services.length : 0" :directory-id="dir.id" :update-fn="fetchData" />
+    </div>
+    <div v-if="!addDir" class="row">
+      <AddDirectory v-bind="{ onClick: toggleAdd }" />
+    </div>
+    <div v-else class="row">
+      <DirectoryForm v-bind="{ onClickCancel: toggleAdd, onSave: saveDirectory }" />
+    </div>
   </div>
 </template>
 

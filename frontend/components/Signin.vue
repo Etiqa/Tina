@@ -29,8 +29,8 @@ export default {
   },
   data() {
     return {
-      email: "roberto.serra@etiqa.it",
-      password: "Changeme1!"
+      email: "",
+      password: ""
     }
   },
   methods: {

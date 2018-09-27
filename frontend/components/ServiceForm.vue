@@ -1,22 +1,22 @@
 <template>
   <div class="row">
     <form class="col" @submit.prevent="onSubmit">
-      <div class="">
+      <div class="form-group">
         <label for="url">Name</label>
         <input v-model="name" name="name" type="text" value="" class="form-control" required>
       </div>
 
-      <div class="">
+      <div class="form-group">
         <label for="url">Url</label>
         <input v-model="url" name="url" type="text" value="" class="form-control" required>
       </div>
 
-      <div class="">
+      <div class="form-group">
         <label for="url">Parsing Function</label>
-        <textarea v-model="parseFn" name="parsingFn" class="form-control" rows="30"/>
+        <textarea v-model="parseFn" name="parsingFn" class="form-control" rows="20"/>
       </div>
 
-      <div>
+      <div class="btn-group" role="group">
         <button class="btn btn-success" type="submit">Save</button>
         <button class="btn btn-primary" @click.prevent="onClickCancel">Cancel</button>
       </div>
