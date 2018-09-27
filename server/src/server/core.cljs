@@ -131,7 +131,6 @@
                                        (.status 400)
                                        (.send error)))))))
 
-(def auth-cookie-name )
 (defn signin [req res]
   (let [email (-> req .-body .-email)
         password (-> req .-body .-password)]

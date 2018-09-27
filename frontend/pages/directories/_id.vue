@@ -5,7 +5,7 @@
 
     <div class="row">
 
-      <Service v-for="(serv, i) in services" :key="i" :dir-id="id" :id="i" :name="serv.name" :url="serv.url" :update-fn="fetchData"/>
+      <Service v-for="(serv, i) in services" :key="i" :dir-id="id" :id="i" :name="serv.name" :url="serv.url" :update-fn="fetchData" :parse-fn="serv.parseFn"/>
     </div>
     <div class="row">
       <div v-if="!addServ" class="col">
@@ -52,6 +52,7 @@ export default {
   methods: {
     fetchData() {
       directory(this.id).then(data => {
+        data.services.forEach(d => console.log(d))
         this.$set(this, "name", data.name)
         this.$set(this, "services", data.services)
       })
@@ -59,9 +60,9 @@ export default {
     toggleAdd() {
       this.$set(this, "addServ", !this.addServ)
     },
-    addService({ url, name }) {
+    addService({ url, name, parseFn }) {
       this.$set(this, "addServ", false)
-      addService(this.id, { url, name }).then(this.fetchData)
+      addService(this.id, { url, name, parseFn }).then(this.fetchData)
     }
   }
 }

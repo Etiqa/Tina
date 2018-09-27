@@ -17,6 +17,11 @@
           <button class="btn btn-success" @click.prevent="toggleRawResponse"> Show/hide </button>
           <div v-show="showRawResponse"><pre> {{ rawResp }}</pre> </div>
         </li>
+        <li class="">
+          Parse Function:
+          <button class="btn btn-success" @click.prevent="toggleParseFn"> Show/hide </button>
+          <div v-show="showParseFn"><pre> {{ internalParseFn }}</pre> </div>
+        </li>
         <li class="col-md-6">
           Info
           <table class="table table-striped">
@@ -35,9 +40,8 @@
         <button class="btn btn-secondary" @click.prevent="getServiceData"><i class="fas fa-redo" /></button>
       </div>
     </div>
-
     <div v-else-if="edit" class="col">
-      <ServiceForm v-bind="{ onClickCancel: closeEdit, onSave: saveUpdate, originalUrl: url, originalName: name }"/>
+      <ServiceForm v-bind="{ onClickCancel: closeEdit, onSave: saveUpdate, originalUrl: url, originalName: name, originalParseFn: internalParseFn }"/>
     </div>
     <div v-else-if="del" class="col">
       <div>
@@ -54,28 +58,6 @@
 <script>
 import { getDataInfo, updateService, deleteService } from "../services/requests"
 import ServiceForm from "./ServiceForm"
-
-/**
-const parseFn = rawData => {
-  return [
-    ["Build Number", rawData.replace(/Build number/, "").replace(/\s/g, "")]
-  ]
-}
-*/
-const parseFn = rawData => {
-  const shadowDom = document.createElement("div")
-
-  shadowDom.innerHTML = rawData
-    .match(/<body[.\S\s]*<\/body>/)[0]
-    .replace(/\n/g, "")
-    .replace(/<body>/g, "")
-    .replace(/<\/body>/g, "")
-    .trim()
-
-  return Array.prototype.slice
-    .call(shadowDom.querySelectorAll(".entry-title > a"))
-    .map(el => el.innerText)
-}
 
 export default {
   components: { ServiceForm },
@@ -99,14 +81,17 @@ export default {
     updateFn: {
       default: () => () => ({}),
       type: Function
+    },
+    parseFn: {
+      default: "",
+      type: String
     }
   },
   data() {
     return {
       edit: false,
       showRawResponse: false,
-      internalUrl: this.url,
-      internalName: this.name,
+      showParseFn: false,
       rawResp: null,
       del: false
     }
@@ -116,23 +101,38 @@ export default {
       return `${this.name}-url`
     },
     info() {
+      const parseFn =
+        this.parseFn && typeof eval(this.parseFn) === "function"
+          ? eval(this.parseFn)
+          : raw => [raw]
       return this.rawResp ? parseFn(this.rawResp) : []
+    },
+    internalName() {
+      return this.name
+    },
+    internalUrl() {
+      return this.url
+    },
+    internalParseFn() {
+      console.log(this.parseFn)
+      return this.parseFn
     }
   },
   mounted() {
     this.getServiceData()
   },
   methods: {
-    saveUpdate({ url, name }) {
-      this.internalUrl = url
-      this.internalName = name
+    saveUpdate({ url, name, parseFn }) {
       this.toggleEdit()
-      updateService(this.dirId, this.id, { url, name }).then(this.updateFn)
+      updateService(this.dirId, this.id, { url, name, parseFn }).then(
+        this.updateFn
+      )
     },
     cancelUpdate() {
       this.editUrl = this.url
       this.internalUrl = this.url
       this.internalName = this.name
+      this.internalParseFn = this.parseFn
       this.toggleEdit()
     },
     toggleEdit() {
@@ -148,6 +148,9 @@ export default {
     },
     toggleRawResponse() {
       this.showRawResponse = !this.showRawResponse
+    },
+    toggleParseFn() {
+      this.showParseFn = !this.showParseFn
     },
     startDelete() {
       this.del = true

@@ -11,6 +11,11 @@
         <input v-model="url" name="url" type="text" value="" class="form-control" required>
       </div>
 
+      <div class="">
+        <label for="url">Parsing Function</label>
+        <textarea v-model="parseFn" name="parsingFn" class="form-control" rows="30"/>
+      </div>
+
       <div>
         <button class="btn btn-success" type="submit">Save</button>
         <button class="btn btn-primary" @click.prevent="onClickCancel">Cancel</button>
@@ -37,18 +42,23 @@ export default {
     originalName: {
       default: () => null,
       type: String
+    },
+    originalParseFn: {
+      default: () => null,
+      type: String
     }
   },
   data() {
     return {
       url: this.originalUrl,
-      name: this.originalName
+      name: this.originalName,
+      parseFn: this.originalParseFn
     }
   },
   methods: {
     onSubmit() {
       if (typeof this.onSave === "function") {
-        this.onSave({ url: this.url, name: this.name })
+        this.onSave({ url: this.url, name: this.name, parseFn: this.parseFn })
       }
     }
   }

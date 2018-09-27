@@ -2,7 +2,7 @@
   (:require [cljs.nodejs :as node]
             [server.utils :as utils]))
 
-(def mysql (node/require "mysql"))f
+(def mysql (node/require "mysql"))
 (def promise (node/require "promise"))
 (def bcrypt (node/require "bcrypt"))
 (def random-token (node/require "random-token"))
@@ -54,17 +54,18 @@
                           (error-promise %1)))))
 
 (defn add-service [dir-id data user-id]
+  (println (.-parseFn data))
   (-> "SELECT JSON_LENGTH(j,'$.services') AS cnt FROM directories WHERE id = ? AND user_id = ?"
       (run-query dir-id user-id)
-      (utils/->then #(run-query "UPDATE directories SET j = JSON_SET(j, '$.services[?]', JSON_OBJECT('name', ?, 'url', ?)) WHERE id = ?"
-                                (-> %1 first :cnt) (.-name data) (.-url data) dir-id))
+      (utils/->then #(run-query "UPDATE directories SET j = JSON_SET(j, '$.services[?]', JSON_OBJECT('name', ?, 'url', ?, 'parseFn', ?)) WHERE id = ?"
+                                (-> %1 first :cnt) (.-name data) (.-url data) (or (.-parseFn data) nil) dir-id))
       (utils/->catch #(do (println "ERROR")
                           (println %1)
                           (error-promise %1)))))
 
 (defn update-service [dir-id serv-id data user-id]
-  (-> "UPDATE directories SET j = JSON_SET(j, '$.services[?]', JSON_OBJECT('name', ?, 'url', ?)) WHERE id = ? AND user_id = ?"
-      (run-query (js/parseInt serv-id) (.-name data) (.-url data) dir-id user-id)
+  (-> "UPDATE directories SET j = JSON_SET(j, '$.services[?]', JSON_OBJECT('name', ?, 'url', ?, 'parseFn', ?)) WHERE id = ? AND user_id = ?"
+      (run-query (js/parseInt serv-id) (.-name data) (.-url data) (or (.-parseFn data) nil) dir-id user-id)
       (utils/->catch #(do (println "ERROR")
                           (println %1)
                           (error-promise %1)))))
